@@ -1,0 +1,138 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+
+import Section from "@/components/shared/Section.astro";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPublishedProjects } from "@/features/projects/content";
+import { getBreadcrumbSchema } from "@/lib/schema";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+type ProjectEntry = CollectionEntry<"projects">;
+
+export async function getStaticPaths() {
+  const projects = await getPublishedProjects();
+
+  return [
+    {
+      params: { slug: undefined },
+      props: { mode: "index" as const, projects },
+    },
+    ...projects.map((project) => ({
+      params: { slug: project.id },
+      props: { mode: "detail" as const, project },
+    })),
+  ];
+}
+
+const { mode } = Astro.props;
+const projects =
+  mode === "index"
+    ? (Astro.props as { projects: ProjectEntry[] }).projects
+    : [];
+const project =
+  mode === "detail"
+    ? (Astro.props as { project: ProjectEntry }).project
+    : undefined;
+
+let ProjectContent;
+let detailStructuredData;
+
+if (project) {
+  const rendered = await render(project);
+  ProjectContent = rendered.Content;
+  detailStructuredData = getBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Projects", path: "/projects" },
+    { name: project.data.title, path: `/projects/${project.id}` },
+  ]);
+}
+---
+
+{
+  mode === "index" ? (
+    <StandardPageLayout
+      eyebrow="Projects"
+      title="Our work"
+      description="A look at some recent projects."
+    >
+      <Section tone="surface">
+        <div class="grid gap-4 md:grid-cols-2">
+          {projects.map((project) => (
+            <Card>
+              {project.data.image && (
+                <img
+                  class="aspect-video w-full rounded-t-lg object-cover"
+                  src={project.data.image}
+                  alt={project.data.imageAlt ?? ""}
+                  width="1200"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <CardHeader>
+                <CardTitle>{project.data.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground text-sm leading-6">
+                  {project.data.description}
+                </p>
+                <a
+                  class="text-primary mt-5 inline-flex text-sm font-medium hover:underline"
+                  href={`/projects/${project.id}`}
+                >
+                  View project &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+    </StandardPageLayout>
+  ) : project ? (
+    <StandardPageLayout
+      eyebrow="Project"
+      title={project.data.title}
+      description={project.data.description}
+      seoTitle={project.data.seo?.title ?? project.data.title}
+      seoDescription={project.data.seo?.description ?? project.data.description}
+      image={project.data.seo?.image ?? project.data.image}
+      noindex={project.data.seo?.noindex}
+      structuredData={detailStructuredData}
+    >
+      <Section tone="surface">
+        <article class="prose-site max-w-3xl">
+          {project.data.image && (
+            <img
+              class="mb-6 aspect-video w-full rounded-lg border object-cover"
+              src={project.data.image}
+              alt={project.data.imageAlt ?? ""}
+              width="1200"
+              height="800"
+              decoding="async"
+            />
+          )}
+          {ProjectContent && <ProjectContent />}
+          {project.data.gallery.length > 0 && (
+            <div class="mt-10">
+              <h2>Gallery</h2>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {project.data.gallery.map((src) => (
+                  <img
+                    class="aspect-video w-full rounded-lg border object-cover"
+                    src={src}
+                    alt=""
+                    width="800"
+                    height="533"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </article>
+      </Section>
+    </StandardPageLayout>
+  ) : null
+}

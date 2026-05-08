@@ -1,0 +1,17 @@
+export function GET(context: { site?: URL }) {
+  const site = context.site?.toString() ?? "https://example.com";
+  const sitemap = new URL("/sitemap-index.xml", site).toString();
+
+  return new Response(
+    `User-agent: *
+Allow: /
+
+Sitemap: ${sitemap}
+`,
+    {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    },
+  );
+}

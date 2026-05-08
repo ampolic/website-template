@@ -1,0 +1,76 @@
+---
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import SEO from "@/components/shared/SEO.astro";
+import { navigationLinks } from "@/config/navigation";
+import { siteConfig } from "@/config/site";
+import { getLocalBusinessSchema } from "@/lib/schema";
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  noindex?: boolean;
+  type?: "website" | "article";
+  structuredData?: unknown | unknown[];
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  image,
+  noindex,
+  type,
+  structuredData,
+  hideHeader = false,
+  hideFooter = false,
+  bodyClass = "",
+} = Astro.props;
+
+const localBusinessSchema = getLocalBusinessSchema(Astro.site);
+const schema = Array.isArray(structuredData)
+  ? [localBusinessSchema, ...structuredData]
+  : structuredData
+    ? [localBusinessSchema, structuredData]
+    : [localBusinessSchema];
+---
+
+<!doctype html>
+<html lang={siteConfig.locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={siteConfig.seo.themeColor} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      image={image}
+      noindex={noindex}
+      type={type}
+      structuredData={schema}
+    />
+  </head>
+  <body class:list={["min-h-dvh", bodyClass]}>
+    <a
+      class="bg-background text-foreground sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:px-4 focus:py-2 focus:shadow-md"
+      href="#main-content"
+    >
+      Skip to content
+    </a>
+    <div class="flex min-h-dvh flex-col">
+      {!hideHeader && <Header navItems={navigationLinks} />}
+      <main id="main-content" class="flex-1">
+        <slot />
+      </main>
+      {!hideFooter && <Footer />}
+    </div>
+  </body>
+</html>

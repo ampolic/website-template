@@ -1,0 +1,43 @@
+---
+import PageHeader from "@/components/shared/PageHeader.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  canonical?: string;
+  image?: string;
+  noindex?: boolean;
+  type?: "website" | "article";
+  structuredData?: unknown | unknown[];
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  seoTitle,
+  seoDescription,
+  canonical,
+  image,
+  noindex,
+  type,
+  structuredData,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={seoTitle ?? title}
+  description={seoDescription ?? description}
+  canonical={canonical}
+  image={image}
+  noindex={noindex}
+  type={type}
+  structuredData={structuredData}
+>
+  <PageHeader eyebrow={eyebrow} title={title} description={description} />
+  <slot />
+</BaseLayout>

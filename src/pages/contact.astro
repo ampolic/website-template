@@ -1,0 +1,75 @@
+---
+import { MailIcon, MapPinIcon, PhoneIcon } from "lucide-react";
+
+import Section from "@/components/shared/Section.astro";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { siteConfig } from "@/config/site";
+import ContactForm from "@/features/contact/ContactForm";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+const formAction = siteConfig.contactAction;
+---
+
+<StandardPageLayout
+  eyebrow="Contact"
+  title="Request an estimate or ask a question"
+  description="Fill out the form and we will get back to you."
+>
+  <Section>
+    <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="grid gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <PhoneIcon className="text-primary size-4" aria-hidden="true" />
+              Phone
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <a
+              class="text-muted-foreground hover:text-foreground text-sm"
+              href={siteConfig.business.phoneHref}
+            >
+              {siteConfig.business.phone}
+            </a>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <MailIcon className="text-primary size-4" aria-hidden="true" />
+              Email
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <a
+              class="text-muted-foreground hover:text-foreground text-sm"
+              href={siteConfig.business.emailHref}
+            >
+              {siteConfig.business.email}
+            </a>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <MapPinIcon className="text-primary size-4" aria-hidden="true" />
+              Service Areas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p class="text-muted-foreground text-sm leading-6">
+              {siteConfig.serviceAreas.join(", ")}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <ContactForm
+        client:load
+        action={formAction}
+        businessName={siteConfig.business.name}
+      />
+    </div>
+  </Section>
+</StandardPageLayout>

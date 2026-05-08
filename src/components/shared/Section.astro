@@ -1,0 +1,54 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  tone?: "default" | "surface" | "tint";
+  class?: string;
+  contentClass?: string;
+}
+
+const {
+  id,
+  eyebrow,
+  title,
+  description,
+  tone = "default",
+  class: className = "",
+  contentClass = "",
+} = Astro.props;
+
+const toneClass = {
+  default: "",
+  surface: "section-surface",
+  tint: "section-tint",
+}[tone];
+---
+
+<section id={id} class:list={["section-spacing", toneClass, className]}>
+  <div class:list={["site-container", contentClass]}>
+    {
+      (eyebrow || title || description) && (
+        <div class="mb-10 max-w-2xl">
+          {eyebrow && (
+            <p class="text-primary text-sm font-semibold tracking-normal uppercase">
+              {eyebrow}
+            </p>
+          )}
+          {title && (
+            <h2 class="mt-3 text-3xl font-semibold tracking-normal sm:text-4xl">
+              {title}
+            </h2>
+          )}
+          {description && (
+            <p class="text-muted-foreground mt-4 text-base leading-7">
+              {description}
+            </p>
+          )}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>

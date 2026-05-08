@@ -1,0 +1,157 @@
+---
+import { LeafIcon, SnowflakeIcon, type LucideIcon } from "lucide-react";
+
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Section from "@/components/shared/Section.astro";
+import { siteConfig } from "@/config/site";
+import { getFeaturedServices } from "@/features/services/content";
+import { getPublishedTestimonials } from "@/features/testimonials/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const featuredServices = await getFeaturedServices();
+const testimonials = await getPublishedTestimonials();
+
+const iconMap: Record<string, LucideIcon> = {
+  leaf: LeafIcon,
+  snowflake: SnowflakeIcon,
+};
+
+function starRating(rating: number) {
+  const full = "★";
+  const empty = "☆";
+  return full.repeat(rating) + empty.repeat(5 - rating);
+}
+---
+
+<BaseLayout
+  title={siteConfig.business.name}
+  description={siteConfig.seo.description}
+>
+  <section class="bg-primary text-primary-foreground">
+    <div
+      class="site-container grid gap-10 py-12 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-20"
+    >
+      <div class="reveal-up">
+        <p
+          class="text-primary-foreground/80 text-sm font-semibold tracking-normal uppercase"
+        >
+          {siteConfig.business.tagline}
+        </p>
+        <h1
+          class="mt-4 max-w-3xl text-4xl font-semibold tracking-normal sm:text-5xl lg:text-6xl"
+        >
+          {siteConfig.business.name}
+        </h1>
+        <p class="text-primary-foreground/80 mt-5 max-w-2xl text-lg leading-8">
+          {siteConfig.business.description}
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            class={buttonVariants({ size: "lg", variant: "secondary" })}
+            href={siteConfig.primaryCta.href}
+          >
+            {siteConfig.primaryCta.label}
+          </a>
+          <a
+            class={buttonVariants({
+              variant: "outline",
+              size: "lg",
+              className:
+                "border-white/25 bg-white/10 text-primary-foreground hover:bg-white/15",
+            })}
+            href={siteConfig.business.phoneHref}
+          >
+            {siteConfig.business.phone}
+          </a>
+        </div>
+      </div>
+
+      <div class="fade-in">
+        <div class="rounded-lg bg-white/10 p-3 shadow-sm ring-1 ring-white/15">
+          <img
+            class="aspect-[4/3] w-full rounded-md object-cover"
+            src="/images/hero.svg"
+            alt=""
+            width="1200"
+            height="800"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Section
+    tone="surface"
+    eyebrow="Services"
+    title="What we offer"
+    description="Professional services tailored to your property."
+  >
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        featuredServices.map((service) => {
+          const Icon = service.data.icon
+            ? iconMap[service.data.icon]
+            : undefined;
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {Icon && (
+                    <Icon className="text-primary size-5" aria-hidden="true" />
+                  )}
+                  {service.data.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground text-sm leading-6">
+                  {service.data.summary ?? service.data.description}
+                </p>
+                <a
+                  class="text-primary mt-5 inline-flex text-sm font-medium hover:underline"
+                  href={`/services/${service.id}`}
+                >
+                  View service &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          );
+        })
+      }
+    </div>
+  </Section>
+
+  {
+    testimonials.length > 0 && (
+      <Section
+        tone="tint"
+        eyebrow="Testimonials"
+        title="What our customers say"
+      >
+        <div class="grid gap-4 md:grid-cols-2">
+          {testimonials.map((t) => (
+            <Card>
+              <CardContent className="pt-6">
+                <p
+                  class="text-accent text-lg"
+                  aria-label={`${t.data.rating} out of 5 stars`}
+                >
+                  {starRating(t.data.rating)}
+                </p>
+                <blockquote class="text-foreground mt-3 text-base leading-7">
+                  &ldquo;{t.data.quote}&rdquo;
+                </blockquote>
+                <figcaption class="text-muted-foreground mt-4 text-sm">
+                  {t.data.name}
+                  {t.data.location ? `, ${t.data.location}` : ""}
+                </figcaption>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+</BaseLayout>

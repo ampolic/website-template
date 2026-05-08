@@ -1,0 +1,63 @@
+---
+import { siteConfig } from "@/config/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  noindex?: boolean;
+  type?: "website" | "article";
+  structuredData?: unknown | unknown[];
+}
+
+const {
+  title,
+  description = siteConfig.seo.description,
+  canonical,
+  image = siteConfig.seo.image,
+  noindex = false,
+  type = "website",
+  structuredData,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(siteConfig.url);
+const pageTitle = title
+  ? `${title} | ${siteConfig.business.name}`
+  : siteConfig.seo.title;
+const canonicalUrl =
+  canonical ?? new URL(Astro.url.pathname, siteUrl).toString();
+const imageUrl = new URL(image, siteUrl).toString();
+const jsonLd = Array.isArray(structuredData)
+  ? structuredData.filter(Boolean)
+  : structuredData
+    ? [structuredData]
+    : [];
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={noindex ? "noindex,nofollow" : "index,follow"} />
+
+<meta property="og:type" content={type} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:site_name" content={siteConfig.business.name} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{
+  jsonLd.map((item) => (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(item)}
+    />
+  ))
+}

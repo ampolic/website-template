@@ -1,0 +1,120 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+
+import Section from "@/components/shared/Section.astro";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPublishedBlogPosts } from "@/features/blog/content";
+import { getBlogPostingSchema, getBreadcrumbSchema } from "@/lib/schema";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+type BlogEntry = CollectionEntry<"blog">;
+
+export async function getStaticPaths() {
+  const posts = await getPublishedBlogPosts();
+
+  return [
+    {
+      params: { slug: undefined },
+      props: { mode: "index" as const, posts },
+    },
+    ...posts.map((post) => ({
+      params: { slug: post.id },
+      props: { mode: "detail" as const, post },
+    })),
+  ];
+}
+
+const { mode } = Astro.props;
+const posts =
+  mode === "index" ? (Astro.props as { posts: BlogEntry[] }).posts : [];
+const post =
+  mode === "detail" ? (Astro.props as { post: BlogEntry }).post : undefined;
+
+let PostContent;
+let postStructuredData;
+
+if (post) {
+  const rendered = await render(post);
+  PostContent = rendered.Content;
+  postStructuredData = [
+    getBlogPostingSchema({
+      title: post.data.title,
+      description: post.data.description,
+      url: `/blog/${post.id}`,
+      publishDate: post.data.publishDate,
+      updatedDate: post.data.updatedDate,
+      author: post.data.author,
+      image: post.data.image ?? post.data.seo?.image,
+    }),
+    getBreadcrumbSchema([
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog" },
+      { name: post.data.title, path: `/blog/${post.id}` },
+    ]),
+  ];
+}
+---
+
+{
+  mode === "index" ? (
+    <StandardPageLayout
+      eyebrow="Blog"
+      title="Latest updates"
+      description="Tips, news, and helpful information."
+    >
+      <Section tone="surface">
+        <div class="grid gap-4 md:grid-cols-2">
+          {posts.map((post) => (
+            <Card>
+              <CardHeader>
+                <div class="mb-2 flex flex-wrap gap-2">
+                  {post.data.tags.map((tag) => (
+                    <Badge variant="secondary">{tag}</Badge>
+                  ))}
+                </div>
+                <CardTitle>{post.data.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground text-sm leading-6">
+                  {post.data.description}
+                </p>
+                <a
+                  class="text-primary mt-5 inline-flex text-sm font-medium hover:underline"
+                  href={`/blog/${post.id}`}
+                >
+                  Read post &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+    </StandardPageLayout>
+  ) : post ? (
+    <StandardPageLayout
+      eyebrow="Blog"
+      title={post.data.title}
+      description={post.data.description}
+      seoTitle={post.data.seo?.title ?? post.data.title}
+      seoDescription={post.data.seo?.description ?? post.data.description}
+      image={post.data.seo?.image ?? post.data.image}
+      noindex={post.data.seo?.noindex}
+      type="article"
+      structuredData={postStructuredData}
+    >
+      <Section tone="surface">
+        <article class="prose-site mx-auto max-w-3xl">
+          <p class="text-muted-foreground text-sm">
+            {post.data.publishDate.toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+          {PostContent && <PostContent />}
+        </article>
+      </Section>
+    </StandardPageLayout>
+  ) : null
+}

@@ -1,0 +1,76 @@
+---
+import { render } from "astro:content";
+
+import Section from "@/components/shared/Section.astro";
+import { buttonVariants } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
+import { getPublishedServices } from "@/features/services/content";
+import { getBreadcrumbSchema, getServiceSchema } from "@/lib/schema";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+export async function getStaticPaths() {
+  const services = await getPublishedServices();
+
+  return services.map((service) => ({
+    params: { slug: service.id },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const structuredData = [
+  getServiceSchema({
+    name: service.data.title,
+    description: service.data.description,
+    url: `/services/${service.id}`,
+  }),
+  getBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Services", path: "/services" },
+    { name: service.data.title, path: `/services/${service.id}` },
+  ]),
+];
+---
+
+<StandardPageLayout
+  eyebrow="Service"
+  title={service.data.title}
+  description={service.data.description}
+  seoTitle={service.data.seo?.title ?? service.data.title}
+  seoDescription={service.data.seo?.description ?? service.data.description}
+  structuredData={structuredData}
+>
+  <Section>
+    <article class="grid gap-10 lg:grid-cols-[1fr_18rem]">
+      <div class="prose-site">
+        {
+          service.data.image && (
+            <img
+              class="mb-8 aspect-video w-full rounded-lg object-cover"
+              src={service.data.image}
+              alt=""
+              width="1200"
+              height="800"
+              decoding="async"
+            />
+          )
+        }
+        <Content />
+      </div>
+      <aside class="bg-card h-fit rounded-lg border p-5 shadow-xs">
+        <h2 class="text-base font-semibold">Ready to get started?</h2>
+        <p class="text-muted-foreground mt-2 text-sm leading-6">
+          Contact us for a free estimate. We will discuss your needs and provide
+          a clear timeline.
+        </p>
+        <a
+          class:list={[buttonVariants({ className: "mt-5 w-full" })]}
+          href={siteConfig.primaryCta.href}
+        >
+          {siteConfig.primaryCta.label}
+        </a>
+      </aside>
+    </article>
+  </Section>
+</StandardPageLayout>

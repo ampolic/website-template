@@ -1,0 +1,55 @@
+---
+import Section from "@/components/shared/Section.astro";
+import { Card, CardContent } from "@/components/ui/card";
+import { siteConfig } from "@/config/site";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+---
+
+<StandardPageLayout
+  eyebrow="About"
+  title={siteConfig.business.name}
+  description="Learn more about our team and what we do."
+>
+  <Section>
+    <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <Card>
+        <CardContent className="pt-6">
+          <dl class="grid gap-4 text-sm">
+            <div>
+              <dt class="font-medium">Business</dt>
+              <dd class="text-muted-foreground mt-1">
+                {siteConfig.business.name}
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium">Phone</dt>
+              <dd class="text-muted-foreground mt-1">
+                <a href={siteConfig.business.phoneHref}
+                  >{siteConfig.business.phone}</a
+                >
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium">Service Areas</dt>
+              <dd class="text-muted-foreground mt-1">
+                {siteConfig.serviceAreas.join(", ")}
+              </dd>
+            </div>
+          </dl>
+        </CardContent>
+      </Card>
+
+      <div class="prose-site">
+        <p>
+          {siteConfig.business.name} is a locally owned and operated business serving
+          the {siteConfig.serviceAreas.slice(0, 3).join(", ")} area and beyond.
+        </p>
+        <p>
+          We take pride in delivering quality work, clear communication, and
+          reliable service. Every project starts with a conversation about what
+          you need and ends with a result you can count on.
+        </p>
+      </div>
+    </div>
+  </Section>
+</StandardPageLayout>

@@ -1,0 +1,9 @@
+# Default ownership for all website code and content.
+* @DylanLogan2581
+
+# Areas that usually need extra care before deploying.
+/.github/ @DylanLogan2581
+/scripts/ @DylanLogan2581
+/src/config/ @DylanLogan2581
+/src/layouts/ @DylanLogan2581
+/src/components/ui/ @DylanLogan2581

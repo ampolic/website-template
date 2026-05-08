@@ -1,0 +1,26 @@
+---
+import type { BrandIconName } from "@/lib/brand-icons";
+import { brandIcons } from "@/lib/brand-icons";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  name: BrandIconName;
+  class?: string;
+  label?: string;
+}
+
+const { name, class: className, label } = Astro.props;
+const icon = brandIcons[name];
+---
+
+<svg
+  class={cn("size-4", className)}
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  role={label ? "img" : undefined}
+  aria-hidden={label ? undefined : "true"}
+>
+  {label && <title>{label}</title>}
+  <path d={icon.path}></path>
+</svg>

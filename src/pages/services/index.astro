@@ -1,0 +1,67 @@
+---
+import { LeafIcon, SnowflakeIcon, type LucideIcon } from "lucide-react";
+
+import Section from "@/components/shared/Section.astro";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPublishedServices } from "@/features/services/content";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+const services = await getPublishedServices();
+
+const iconMap: Record<string, LucideIcon> = {
+  leaf: LeafIcon,
+  snowflake: SnowflakeIcon,
+};
+---
+
+<StandardPageLayout
+  eyebrow="Services"
+  title="Our services"
+  description="Professional work delivered reliably."
+>
+  <Section>
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        services.map((service) => {
+          const Icon = service.data.icon
+            ? iconMap[service.data.icon]
+            : undefined;
+          return (
+            <Card>
+              {service.data.image && (
+                <img
+                  class="aspect-video w-full rounded-t-lg object-cover"
+                  src={service.data.image}
+                  alt=""
+                  width="1200"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {Icon && (
+                    <Icon className="text-primary size-5" aria-hidden="true" />
+                  )}
+                  {service.data.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground text-sm leading-6">
+                  {service.data.description}
+                </p>
+                <a
+                  class="text-primary mt-5 inline-flex text-sm font-medium hover:underline"
+                  href={`/services/${service.id}`}
+                >
+                  Read more &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          );
+        })
+      }
+    </div>
+  </Section>
+</StandardPageLayout>

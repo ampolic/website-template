@@ -1,0 +1,32 @@
+---
+import Section from "@/components/shared/Section.astro";
+import FAQAccordion from "@/features/faq/FAQAccordion";
+import { getPublishedFaqs } from "@/features/faq/content";
+import { getFAQPageSchema, getBreadcrumbSchema } from "@/lib/schema";
+import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+const faqs = await getPublishedFaqs();
+const items = faqs.map((faq) => ({
+  id: faq.id,
+  question: faq.data.question,
+  answer: faq.data.answer,
+}));
+const structuredData = [
+  getFAQPageSchema(items.map(({ question, answer }) => ({ question, answer }))),
+  getBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "FAQ", path: "/faq" },
+  ]),
+];
+---
+
+<StandardPageLayout
+  eyebrow="FAQ"
+  title="Frequently asked questions"
+  description="Common questions about our services."
+  structuredData={structuredData}
+>
+  <Section tone="surface">
+    <FAQAccordion client:visible items={items} />
+  </Section>
+</StandardPageLayout>
