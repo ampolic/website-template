@@ -1,0 +1,48 @@
+name: Deploy release to Plesk
+
+on:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: plesk-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy release artifact over SFTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download release artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          mkdir -p release-artifacts
+          gh release download "$TAG_NAME" \
+            --pattern "dist.tar.gz" \
+            --dir release-artifacts
+
+      - name: Extract static site
+        run: |
+          mkdir -p deploy
+          tar -xzf release-artifacts/dist.tar.gz -C deploy
+
+      - name: Deploy to Plesk httpdocs over SFTP
+        uses: wlixcc/SFTP-Deploy-Action@a5ccb9c6211a94cc59404f0fdb2a9936a6dfee64 # v1.2.6
+        with:
+          server: ${{ secrets.SFTP_SERVER || secrets.FTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME || secrets.FTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD || secrets.FTP_PASSWORD }}
+          ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY || '' }}
+          port: ${{ secrets.SFTP_PORT || '22' }}
+          local_path: ./deploy/*
+          remote_path: httpdocs
+          sftp_only: true
+          sftpArgs: -o ConnectTimeout=30 -o StrictHostKeyChecking=no
