@@ -1,87 +1,80 @@
-# AI Agent Instructions
+# Agent Instructions
 
-Do **not** read `README.md` or `CONTRIBUTORS.md` — they are redundant with this file.
+## Stack
 
-## Architecture
+- Astro static site. Prefer `.astro` for static UI.
+- Use React only for interactive islands.
+- Use Tailwind utilities and tokens in `src/styles/global.css`.
+- Use existing shadcn UI primitives from `src/components/ui/`.
 
-- Prefer Astro components for static UI.
-- Use React only for interactive islands (mobile nav, accordion, contact form, toasts).
-- Use ShadCN UI primitives for buttons, cards, accordions, sheets, forms, inputs.
-- Create site-specific sections in `src/components/sections/`.
-- Keep shared components foundational: layout, SEO, wrappers, UI primitives.
+## Structure
 
-## Repository Workflow
+- Layout/shared UI: `src/layouts/`, `src/components/layout/`, `src/components/shared/`.
+- Config: `src/config/site.ts`, `src/config/navigation.ts`.
+- Content collections: `src/content/`, schemas in `src/lib/content-schemas.ts`, helpers in `src/features/`.
+- Pages: `src/pages/`.
+- Public assets: `public/`.
 
-- All pushes go to `main` — no feature branches.
-- Use conventional commits via `npm run commit`.
-- Respect Husky hooks (commitlint, lint-staged).
-- Use `npm run release` only from a clean `main` working tree.
-- Release artifacts include `dist/` as `release-artifacts/dist.tar.gz`.
+## File Placement
 
-## Styling
+- Route files live in `src/pages/`. Keep pages thin: compose layouts, shared sections, feature helpers, and config/content data.
+- Page shells belong in `src/layouts/`; site chrome belongs in `src/components/layout/`.
+- Reusable static UI belongs in `.astro` files under `src/components/shared/`.
+- Generic shadcn UI primitives belong in `src/components/ui/`. Treat these files as registry-owned: regenerate with the shadcn CLI instead of manually rewriting them to match local lint preferences.
+- Feature-specific helpers, data mappers, and interactive islands belong in `src/features/<feature>/`.
+- Business-editable structured data belongs in `src/config/` or `src/content/`, not hardcoded into page templates.
+- Content collection schemas belong in `src/lib/content-schemas.ts`; collection registration belongs in `src/content.config.ts`.
+- Public assets belong in descriptive subfolders under `public/`, such as `public/images/team/`, `public/images/services/`, and `public/resumes/`.
 
-- Use Tailwind utilities and CSS tokens in `src/styles/global.css`.
-- Color tokens (`--background`, `--foreground`, `--primary`, `--accent`, etc.) are defined in `:root` as OKLCH values.
-- Keep visual style clean, modern, mobile-first.
-- Use the system font stack (`ui-sans-serif, system-ui, sans-serif`).
-- Do not add dark/light mode.
+## Naming
 
-## Content
+- Use PascalCase for authored Astro and React components outside `src/components/ui/`, including layout/shared components and React islands.
+- Use kebab-case for `src/components/ui/` files, route files, config files, lib files, content files, feature helper files, scripts, and folders.
+- Use `@/` imports inside `src/`; avoid relative imports between source modules.
+- Prefer descriptive public asset names in lowercase kebab-case. Public files are not linted, but final assets should avoid spaces, uppercase letters, and vague names.
 
-- Editable content lives in Astro content collections under `src/content/`.
-- Each collection has an independent folder, schema, helpers in `src/features/`, and route files when needed.
-- Example modules (blog, projects, faq, testimonials) are removable — delete the feature folder, content folder, route, and unregister from `src/content.config.ts`.
-- To add a new content type: add collection folder, feature folder with schema/helpers, route files, and navigation link.
+## Rules
 
-## Images
-
-- Store images in `public/images/`.
-- Required placeholder replacements:
-  - `public/images/hero.svg` — hero/home page banner
-  - `public/images/placeholder.svg` — generic content photo
-- Use `<img>` with `width`, `height`, `loading="lazy"` (non-critical), `decoding="async"`.
-- Use `fetchpriority="high"` for hero images.
-
-## SEO
-
-- Every page must have a title and description.
-- Canonical URLs, OpenGraph, sitemap, robots.txt are configured.
-- Use `getLocalBusinessSchema()`, `getServiceSchema()`, `getBreadcrumbSchema()`, `getBlogPostingSchema()`, `getFAQPageSchema()` from `src/lib/schema.ts`.
-- All schema helpers are modular — use as needed, omit what isn't relevant.
-
-## Environment Variables
-
-| Variable                     | Purpose                                                 |
-| ---------------------------- | ------------------------------------------------------- |
-| `SITE_URL`                   | Production URL for canonical links, sitemap, robots.txt |
-| `PUBLIC_CONTACT_FORM_ACTION` | Form endpoint URL (e.g., FormSpree)                     |
-
-## Commands
-
-- `npm run dev` — start dev server
-- `npm run build` — production build (without type checking)
-- `npm run check` — type checking only
-- `npm run lint` — ESLint
-- `npm run format` — Prettier
-- `npm run commit` — interactive conventional commit
-- `npm run release` — full release pipeline
-
-## Site Configuration
-
-All site settings in `src/config/site.ts`:
-
-- `business` — name, legal name, phone, email, address, hours
-- `serviceAreas` — string array of served locations
-- `social` — social media URLs (empty strings hide the icon)
-- `contactAction` — form endpoint URL
-- `seo` — default title, description, image, theme color
-
-Navigation in `src/config/navigation.ts`: array of `{ label, href }` objects.
+- Keep output compatible with static `astro build`.
+- Every page needs title, description, and canonical handling through layouts/SEO.
+- Use semantic HTML, labels, visible focus states, and sufficient contrast.
+- Minimize client JS; use Astro islands sparingly.
+- For small React islands, prefer local state and native form behavior over heavy client form libraries unless complexity clearly justifies them.
+- Do not import theme providers or theme hooks into client islands unless the site explicitly supports theme switching.
+- Prefer Astro's built-in `astro:assets` pipeline for raster site images. Store optimizable images under `src/assets/`, and for content collections use schema-owned image fields via Astro's `image()` helper instead of string paths or manual lookup maps.
+- Reserve `public/` for files that should stay as passthrough assets, such as SVGs, favicons, robots files, downloads, and assets that must keep a stable URL.
+- Do not add dark/light mode unless requested.
 
 ## Performance & Accessibility
 
-- Minimize client-side JS.
-- Use `client:idle`, `client:visible`, `client:load` sparingly.
-- Use semantic HTML landmarks and form labels.
-- Maintain visible focus states and sufficient color contrast.
-- Keep the site compatible with `astro build` static output.
+### LCP images in mapped lists
+
+When a page renders a list of cards or items where the first card's image is above the fold, that first image is the LCP element. Do not use `loading="lazy"` uniformly across the whole list. Use the map `index` to apply `loading="eager"` and `fetchpriority="high"` to index 0, and `loading="lazy"` / `fetchpriority="auto"` to the rest.
+
+### Third-party scripts
+
+Do not load third-party scripts (analytics, captchas, chat widgets, etc.) unconditionally on mount. Load them only when needed:
+
+- Defer via `IntersectionObserver` when the script serves a UI element that may be off-screen (e.g. a contact form captcha). Use a `rootMargin` of `200px` so the script starts loading slightly before the element is visible.
+- Eager loading of third-party scripts on every page damages Best-Practices scores due to third-party cookies and deprecated APIs that are outside our control.
+
+### `aria-label` on links with visible text
+
+When a link or button has visible text, `aria-label` must contain that text (WCAG 2.5.3). A mismatch breaks the accessibility audit and confuses screen reader users who activate controls by speaking what they see. Use `aria-label` to augment, not replace, the visible label — for example `` `${businessName} - Home` `` instead of just `"Home"` on a branded logo link.
+
+## Template Notes
+
+- This repo is a template. Bootstrap a duplicated repo with `npm run bootstrap:site` (see `scripts/bootstrap-site.ts --help`).
+- Example modules (blog, projects, faq, testimonials, services) are removable: delete the feature folder, content folder, route files, and unregister from `src/content.config.ts`.
+- To add a new content type: add a collection folder, a feature folder with schema/helpers, route files, and a navigation link.
+- `SITE_URL` env var sets the production URL for canonical links, sitemap, and robots.txt.
+
+## Commands
+
+- Dev: `npm run dev`
+- Type check: `npm run check`
+- Lint: `npm run lint`
+- Format: `npm run format`
+- Build: `npm run build`
+- Commit: `npm run commit`
+- Release: `npm run release` from clean `main`
