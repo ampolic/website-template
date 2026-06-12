@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -20,13 +20,20 @@ function main(): void {
   run("npm", ["run", "build"]);
   packageStaticBuild();
 
+  const githubToken = execSync("gh auth token", {
+    encoding: "utf8",
+  }).trim();
+
   const semanticReleaseArgs = ["semantic-release", "--no-ci"];
 
   if (options.dryRun) {
     semanticReleaseArgs.push("--dry-run");
   }
 
-  run("npx", semanticReleaseArgs);
+  run("npx", semanticReleaseArgs, {
+    ...process.env,
+    GITHUB_TOKEN: githubToken,
+  });
 }
 
 function parseArguments(args: string[]): ReleaseOptions {
@@ -121,9 +128,10 @@ function packageStaticBuild(): void {
   run("tar", ["-czf", artifactPath, "-C", distDirectory, "."]);
 }
 
-function run(command: string, args: string[]): void {
+function run(command: string, args: string[], env?: NodeJS.ProcessEnv): void {
   execFileSync(command, args, {
     stdio: "inherit",
+    env,
   });
 }
 

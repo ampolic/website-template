@@ -4,7 +4,13 @@
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md",
+        "changelogTitle": "# Changelog\n\nAll notable changes to this website are documented here.\n\nThis file is maintained by semantic-release. Use conventional commits through `npm run commit` so releases can generate accurate notes."
+      }
+    ],
     ["@semantic-release/npm", { "npmPublish": false }],
     [
       "@semantic-release/git",
@@ -16,6 +22,7 @@
     [
       "@semantic-release/github",
       {
+        "releaseBodyTemplate": "<%= nextRelease.notes.trim().replace(/^#{1,2} .+\\n\\n?/, '') %>",
         "assets": [
           {
             "path": "release-artifacts/dist.tar.gz",
