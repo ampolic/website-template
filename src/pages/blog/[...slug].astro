@@ -1,12 +1,13 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+// eslint-disable-next-line no-restricted-imports -- render() is only available from astro:content
+import { type CollectionEntry, render } from "astro:content";
 
 import Section from "@/components/shared/Section.astro";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPublishedBlogPosts } from "@/features/blog/content";
-import { getBlogPostingSchema, getBreadcrumbSchema } from "@/lib/schema";
 import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+import { getBlogPostingSchema, getBreadcrumbSchema } from "@/lib/schema";
 
 type BlogEntry = CollectionEntry<"blog">;
 
@@ -57,7 +58,7 @@ if (post) {
 ---
 
 {
-  mode === "index" ? (
+  mode === "index" && (
     <StandardPageLayout
       eyebrow="Blog"
       title="Latest updates"
@@ -76,7 +77,7 @@ if (post) {
                 <CardTitle>{post.data.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p class="text-muted-foreground text-sm leading-6">
+                <p class="text-muted-foreground text-sm/6">
                   {post.data.description}
                 </p>
                 <a
@@ -91,7 +92,11 @@ if (post) {
         </div>
       </Section>
     </StandardPageLayout>
-  ) : post ? (
+  )
+}
+
+{
+  post && (
     <StandardPageLayout
       eyebrow="Blog"
       title={post.data.title}
@@ -116,5 +121,5 @@ if (post) {
         </article>
       </Section>
     </StandardPageLayout>
-  ) : null
+  )
 }

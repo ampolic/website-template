@@ -1,0 +1,12 @@
+{
+  "search.exclude": {
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/dist/**": true
+  },
+  "tailwindCSS.files.exclude": {
+    "**/dist/**": true,
+    "**/src/components/ui/**": true
+  }
+}

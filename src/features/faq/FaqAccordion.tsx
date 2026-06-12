@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-type FAQAccordionProps = {
+type FaqAccordionProps = {
   items: Array<{
     id: string;
     question: string;
@@ -13,7 +13,7 @@ type FAQAccordionProps = {
   }>;
 };
 
-export default function FAQAccordion({ items }: FAQAccordionProps) {
+export default function FaqAccordion({ items }: FaqAccordionProps) {
   return (
     <Accordion
       type="single"

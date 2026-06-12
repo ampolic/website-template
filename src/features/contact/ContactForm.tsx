@@ -86,7 +86,7 @@ export default function ContactForm({
         <form
           className="bg-card rounded-lg border p-6 shadow-xs"
           noValidate
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
         >
           <div className="grid gap-5">
             <FormField

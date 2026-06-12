@@ -1,11 +1,12 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+// eslint-disable-next-line no-restricted-imports -- render() is only available from astro:content
+import { type CollectionEntry, render } from "astro:content";
 
 import Section from "@/components/shared/Section.astro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPublishedProjects } from "@/features/projects/content";
-import { getBreadcrumbSchema } from "@/lib/schema";
 import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+import { getBreadcrumbSchema } from "@/lib/schema";
 
 type ProjectEntry = CollectionEntry<"projects">;
 
@@ -49,7 +50,7 @@ if (project) {
 ---
 
 {
-  mode === "index" ? (
+  mode === "index" && (
     <StandardPageLayout
       eyebrow="Projects"
       title="Our work"
@@ -74,7 +75,7 @@ if (project) {
                 <CardTitle>{project.data.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p class="text-muted-foreground text-sm leading-6">
+                <p class="text-muted-foreground text-sm/6">
                   {project.data.description}
                 </p>
                 <a
@@ -89,7 +90,11 @@ if (project) {
         </div>
       </Section>
     </StandardPageLayout>
-  ) : project ? (
+  )
+}
+
+{
+  project && (
     <StandardPageLayout
       eyebrow="Project"
       title={project.data.title}
@@ -134,5 +139,5 @@ if (project) {
         </article>
       </Section>
     </StandardPageLayout>
-  ) : null
+  )
 }

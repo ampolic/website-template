@@ -1,9 +1,9 @@
 ---
-import { LeafIcon, SnowflakeIcon, type LucideIcon } from "lucide-react";
+import { LeafIcon, type LucideIcon, SnowflakeIcon } from "lucide-react";
 
+import Section from "@/components/shared/Section.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Section from "@/components/shared/Section.astro";
 import { siteConfig } from "@/config/site";
 import { getFeaturedServices } from "@/features/services/content";
 import { getPublishedTestimonials } from "@/features/testimonials/content";
@@ -43,22 +43,22 @@ function starRating(rating: number) {
         >
           {siteConfig.business.name}
         </h1>
-        <p class="text-primary-foreground/80 mt-5 max-w-2xl text-lg leading-8">
+        <p class="text-primary-foreground/80 mt-5 max-w-2xl text-lg/8">
           {siteConfig.business.description}
         </p>
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
           <a
-            class={buttonVariants({ size: "lg", variant: "secondary" })}
+            class:list={buttonVariants({ size: "lg", variant: "secondary" })}
             href={siteConfig.primaryCta.href}
           >
             {siteConfig.primaryCta.label}
           </a>
           <a
-            class={buttonVariants({
+            class:list={buttonVariants({
               variant: "outline",
               size: "lg",
               className:
-                "border-white/25 bg-white/10 text-primary-foreground hover:bg-white/15",
+                "text-primary-foreground border-white/25 bg-white/10 hover:bg-white/15",
             })}
             href={siteConfig.business.phoneHref}
           >
@@ -70,7 +70,7 @@ function starRating(rating: number) {
       <div class="fade-in">
         <div class="rounded-lg bg-white/10 p-3 shadow-sm ring-1 ring-white/15">
           <img
-            class="aspect-[4/3] w-full rounded-md object-cover"
+            class="aspect-4/3 w-full rounded-md object-cover"
             src="/images/hero.svg"
             alt=""
             width="1200"
@@ -106,7 +106,7 @@ function starRating(rating: number) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p class="text-muted-foreground text-sm leading-6">
+                <p class="text-muted-foreground text-sm/6">
                   {service.data.summary ?? service.data.description}
                 </p>
                 <a
@@ -140,7 +140,7 @@ function starRating(rating: number) {
                 >
                   {starRating(t.data.rating)}
                 </p>
-                <blockquote class="text-foreground mt-3 text-base leading-7">
+                <blockquote class="text-foreground mt-3 text-base/7">
                   &ldquo;{t.data.quote}&rdquo;
                 </blockquote>
                 <figcaption class="text-muted-foreground mt-4 text-sm">

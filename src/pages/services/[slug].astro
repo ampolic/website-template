@@ -1,12 +1,13 @@
 ---
+// eslint-disable-next-line no-restricted-imports -- render() is only available from astro:content
 import { render } from "astro:content";
 
 import Section from "@/components/shared/Section.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { getPublishedServices } from "@/features/services/content";
-import { getBreadcrumbSchema, getServiceSchema } from "@/lib/schema";
 import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+import { getBreadcrumbSchema, getServiceSchema } from "@/lib/schema";
 
 export async function getStaticPaths() {
   const services = await getPublishedServices();
@@ -60,7 +61,7 @@ const structuredData = [
       </div>
       <aside class="bg-card h-fit rounded-lg border p-5 shadow-xs">
         <h2 class="text-base font-semibold">Ready to get started?</h2>
-        <p class="text-muted-foreground mt-2 text-sm leading-6">
+        <p class="text-muted-foreground mt-2 text-sm/6">
           Contact us for a free estimate. We will discuss your needs and provide
           a clear timeline.
         </p>
