@@ -1,6 +1,10 @@
 ---
+import type { Thing, WithContext } from "schema-dts";
+
 import PageHeader from "@/components/shared/PageHeader.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+type StructuredData = WithContext<Thing>;
 
 interface Props {
   title: string;
@@ -10,9 +14,10 @@ interface Props {
   seoDescription?: string;
   canonical?: string;
   image?: string;
+  imageAlt?: string;
   noindex?: boolean;
   type?: "website" | "article";
-  structuredData?: unknown | unknown[];
+  structuredData?: StructuredData | StructuredData[];
 }
 
 const {
@@ -23,6 +28,7 @@ const {
   seoDescription,
   canonical,
   image,
+  imageAlt,
   noindex,
   type,
   structuredData,
@@ -34,6 +40,7 @@ const {
   description={seoDescription ?? description}
   canonical={canonical}
   image={image}
+  imageAlt={imageAlt}
   noindex={noindex}
   type={type}
   structuredData={structuredData}

@@ -1,3 +1,12 @@
+import type {
+  BlogPosting as SchemaBlogPosting,
+  BreadcrumbList,
+  FAQPage,
+  LocalBusiness,
+  Service,
+  WithContext,
+} from "schema-dts";
+
 import { siteConfig } from "@/config/site";
 
 function absoluteUrl(path: string, site?: URL) {
@@ -5,7 +14,7 @@ function absoluteUrl(path: string, site?: URL) {
   return new URL(path, base).toString();
 }
 
-export function getLocalBusinessSchema(site?: URL) {
+export function getLocalBusinessSchema(site?: URL): WithContext<LocalBusiness> {
   const { business } = siteConfig;
 
   return {
@@ -14,25 +23,30 @@ export function getLocalBusinessSchema(site?: URL) {
     name: business.name,
     legalName: business.legalName,
     description: business.description,
-    telephone: business.phone,
-    email: business.email,
+    ...(business.phone ? { telephone: business.phone } : {}),
+    ...(business.email ? { email: business.email } : {}),
     url: absoluteUrl("/", site),
     image: absoluteUrl(siteConfig.seo.image, site),
     address: {
       "@type": "PostalAddress",
-      streetAddress: business.address.street,
-      addressLocality: business.address.city,
-      addressRegion: business.address.region,
-      postalCode: business.address.postalCode,
+      ...(business.address.street
+        ? { streetAddress: business.address.street }
+        : {}),
+      ...(business.address.city
+        ? { addressLocality: business.address.city }
+        : {}),
+      ...(business.address.region
+        ? { addressRegion: business.address.region }
+        : {}),
+      ...(business.address.postalCode
+        ? { postalCode: business.address.postalCode }
+        : {}),
       addressCountry: business.address.country,
     },
-    areaServed: siteConfig.serviceAreas.map((area) => ({
-      "@type": "City",
-      name: area,
-    })),
-    openingHours: business.hours,
-    sameAs: Object.values(siteConfig.social).filter(Boolean),
-  };
+    areaServed: siteConfig.serviceAreas as string[],
+    ...(business.hours.length > 0 ? { openingHours: business.hours } : {}),
+    sameAs: Object.values(siteConfig.social).filter(Boolean) as string[],
+  } as WithContext<LocalBusiness>;
 }
 
 export function getServiceSchema({
@@ -43,7 +57,7 @@ export function getServiceSchema({
   name: string;
   description: string;
   url: string;
-}) {
+}): WithContext<Service> {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -54,14 +68,14 @@ export function getServiceSchema({
       name: siteConfig.business.name,
       url: absoluteUrl("/"),
     },
-    areaServed: siteConfig.serviceAreas,
+    areaServed: siteConfig.serviceAreas as string[],
     url: absoluteUrl(url),
-  };
+  } as WithContext<Service>;
 }
 
 export function getBreadcrumbSchema(
   items: Array<{ name: string; path: string }>,
-) {
+): WithContext<BreadcrumbList> {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -90,7 +104,7 @@ export function getBlogPostingSchema({
   updatedDate?: Date;
   author: string;
   image?: string;
-}) {
+}): WithContext<SchemaBlogPosting> {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -106,12 +120,12 @@ export function getBlogPostingSchema({
       url: absoluteUrl("/"),
     },
     ...(image ? { image: absoluteUrl(image) } : {}),
-  };
+  } as WithContext<SchemaBlogPosting>;
 }
 
 export function getFAQPageSchema(
   items: Array<{ question: string; answer: string }>,
-) {
+): WithContext<FAQPage> {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

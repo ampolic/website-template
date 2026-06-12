@@ -1,0 +1,97 @@
+---
+import { SEO } from "astro-seo";
+import type { Thing, WithContext } from "schema-dts";
+
+import { siteConfig } from "@/config/site";
+
+type StructuredData = WithContext<Thing>;
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  imageAlt?: string;
+  noindex?: boolean;
+  type?: "website" | "article";
+  structuredData?: StructuredData | StructuredData[];
+}
+
+const {
+  title,
+  description = siteConfig.seo.description,
+  canonical,
+  image = siteConfig.seo.image,
+  imageAlt = siteConfig.seo.imageAlt,
+  noindex = false,
+  type = "website",
+  structuredData,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(siteConfig.url);
+const ogLocale = siteConfig.locale.replace("-", "_");
+const pageTitle = title
+  ? `${title} | ${siteConfig.business.name}`
+  : siteConfig.seo.title;
+const canonicalUrl = new URL(
+  canonical ?? Astro.url.pathname,
+  siteUrl,
+).toString();
+const imageUrl = new URL(image, siteUrl).toString();
+let jsonLd: StructuredData[] = [];
+
+if (Array.isArray(structuredData)) {
+  jsonLd = structuredData.filter(Boolean);
+} else if (structuredData) {
+  jsonLd = [structuredData];
+}
+---
+
+<SEO
+  title={title}
+  titleTemplate={`%s | ${siteConfig.business.name}`}
+  titleDefault={siteConfig.seo.title}
+  description={description}
+  canonical={canonicalUrl}
+  noindex={noindex}
+  nofollow={noindex}
+  robotsExtras={noindex ? undefined : "max-image-preview:large"}
+  openGraph={{
+    basic: {
+      title: pageTitle,
+      type,
+      image: imageUrl,
+      url: canonicalUrl,
+    },
+    optional: {
+      description,
+      locale: ogLocale,
+      siteName: siteConfig.business.name,
+    },
+    image: {
+      alt: imageAlt,
+    },
+  }}
+  twitter={{
+    card: "summary_large_image",
+    site: siteConfig.seo.twitterSite,
+    title: pageTitle,
+    description,
+    image: imageUrl,
+    imageAlt,
+  }}
+  extend={{
+    meta: [{ name: "author", content: siteConfig.business.legalName }],
+  }}
+  surpressWarnings
+/>
+
+{
+  jsonLd.map((item) => (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(item)}
+    />
+  ))
+}
