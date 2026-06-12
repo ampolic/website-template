@@ -1,3 +1,49 @@
+export type SiteConfig = {
+  locale: string;
+  url: string;
+  business: {
+    name: string;
+    legalName: string;
+    tagline: string;
+    taglineShort: string;
+    description: string;
+    phone: string;
+    phoneHref: string;
+    email: string;
+    emailHref: string;
+    address: {
+      street: string;
+      city: string;
+      region: string;
+      postalCode: string;
+      country: string;
+    };
+    hours: string[];
+  };
+  serviceAreas: string[];
+  primaryCta: {
+    label: string;
+    href: string;
+  };
+  social: {
+    facebook: string;
+    github: string;
+    instagram: string;
+    linkedin: string;
+    x: string;
+    youtube: string;
+  };
+  contactAction: string;
+  seo: {
+    title: string;
+    description: string;
+    image: string;
+    imageAlt: string;
+    themeColor: string;
+    twitterSite?: string;
+  };
+};
+
 export const siteConfig = {
   locale: "en-US",
   url: "https://example.com",
@@ -5,6 +51,7 @@ export const siteConfig = {
     name: "Evergreen Local Services",
     legalName: "Evergreen Local Services LLC",
     tagline: "Reliable work from a local team.",
+    taglineShort: "Reliable local services",
     description:
       "A practical starter site for local service businesses that need fast, polished static websites.",
     phone: "(555) 123-4567",
@@ -27,19 +74,20 @@ export const siteConfig = {
   },
   social: {
     facebook: "",
+    github: "",
     instagram: "",
     linkedin: "",
     x: "",
     youtube: "",
   },
-  contactAction: import.meta.env.PUBLIC_CONTACT_FORM_ACTION ?? "",
+  contactAction: "",
   seo: {
     title: "Evergreen Local Services | Local Service Business",
     description:
       "A fast, SEO-friendly starter website for local service businesses.",
     image: "/images/hero.svg",
+    imageAlt: "Illustration of a local service business at work",
     themeColor: "#2f7662",
+    twitterSite: undefined,
   },
-} as const;
-
-export type SiteConfig = typeof siteConfig;
+} satisfies SiteConfig;

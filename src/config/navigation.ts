@@ -1,7 +1,27 @@
-export type NavItem = {
+export type NavDropdownItem = {
   label: string;
   href: string;
+  description?: string;
 };
+
+export type NavDropdownGroup = {
+  heading?: string;
+  items: NavDropdownItem[];
+};
+
+export type NavLink = {
+  label: string;
+  href: string;
+  groups?: never;
+};
+
+export type NavDropdown = {
+  label: string;
+  href?: string;
+  groups: NavDropdownGroup[];
+};
+
+export type NavItem = NavLink | NavDropdown;
 
 export const navigationLinks: NavItem[] = [
   {

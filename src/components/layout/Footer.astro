@@ -3,14 +3,17 @@ import BrandIcon from "@/components/shared/BrandIcon.astro";
 import { navigationLinks } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { brandIcons, isBrandIconName } from "@/lib/brand-icons";
+import { isCurrentHref } from "@/lib/nav-utils";
 
-const navItems = navigationLinks;
+const navItems = navigationLinks.filter((item) => item.href !== undefined) as {
+  label: string;
+  href: string;
+}[];
 const year = new Date().getFullYear();
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
-const isCurrentHref = (href: string) =>
-  currentPath === href || currentPath.startsWith(`${href}/`);
 const socialLabels: Record<string, string> = {
   facebook: "Facebook",
+  github: "GitHub",
   instagram: "Instagram",
   linkedin: "LinkedIn",
   x: "X",
@@ -18,17 +21,28 @@ const socialLabels: Record<string, string> = {
 };
 const socialLinks = Object.entries(siteConfig.social).flatMap(
   ([name, href]) => {
-    if (!href || !isBrandIconName(name)) return [];
+    if (!href || !isBrandIconName(name)) {
+      return [];
+    }
     return { href, label: socialLabels[name] ?? brandIcons[name].title, name };
   },
 );
+const location = [
+  siteConfig.business.address.city,
+  siteConfig.business.address.region,
+  siteConfig.business.address.country,
+]
+  .filter(Boolean)
+  .join(", ");
 ---
 
 <footer class="bg-foreground text-background">
   <div class="site-container grid gap-10 py-12 md:grid-cols-[1.5fr_1fr_1fr]">
     <div>
-      <a class="text-base font-semibold" href="/">{siteConfig.business.name}</a>
-      <p class="mt-3 max-w-md text-sm leading-6 opacity-70">
+      <a class="text-base font-semibold" href="/" data-astro-prefetch>
+        {siteConfig.business.name}
+      </a>
+      <p class="mt-3 max-w-md text-sm/6 opacity-70">
         {siteConfig.business.description}
       </p>
       <p class="mt-4 text-sm opacity-50">
@@ -45,10 +59,16 @@ const socialLinks = Object.entries(siteConfig.social).flatMap(
             <a
               class:list={[
                 "text-sm transition-colors hover:opacity-80",
-                isCurrentHref(item.href) ? "opacity-100" : "opacity-60",
+                {
+                  "opacity-100": isCurrentHref(currentPath, item.href),
+                  "opacity-60": !isCurrentHref(currentPath, item.href),
+                },
               ]}
               href={item.href}
-              aria-current={isCurrentHref(item.href) ? "page" : undefined}
+              aria-current={
+                isCurrentHref(currentPath, item.href) ? "page" : undefined
+              }
+              data-astro-prefetch
             >
               {item.label}
             </a>
@@ -60,23 +80,27 @@ const socialLinks = Object.entries(siteConfig.social).flatMap(
     <div>
       <h2 class="text-sm font-semibold">Contact</h2>
       <address class="mt-3 grid gap-2 text-sm not-italic opacity-60">
-        <a
-          class="transition-colors hover:opacity-80"
-          href={siteConfig.business.phoneHref}
-        >
-          {siteConfig.business.phone}
-        </a>
-        <a
-          class="transition-colors hover:opacity-80"
-          href={siteConfig.business.emailHref}
-        >
-          {siteConfig.business.email}
-        </a>
-        <span>
-          {siteConfig.business.address.city}, {
-            siteConfig.business.address.region
-          }
-        </span>
+        {
+          siteConfig.business.phone && siteConfig.business.phoneHref && (
+            <a
+              class="transition-colors hover:opacity-80"
+              href={siteConfig.business.phoneHref}
+            >
+              {siteConfig.business.phone}
+            </a>
+          )
+        }
+        {
+          siteConfig.business.email && siteConfig.business.emailHref && (
+            <a
+              class="transition-colors hover:opacity-80"
+              href={siteConfig.business.emailHref}
+            >
+              {siteConfig.business.email}
+            </a>
+          )
+        }
+        {location && <span>{location}</span>}
       </address>
       {
         socialLinks.length > 0 && (
