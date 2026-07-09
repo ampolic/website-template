@@ -10,9 +10,9 @@
     "dev": "astro dev",
     "build:analyze": "BUNDLE_ANALYZE=true astro build",
     "build": "astro build",
-    "preview": "astro preview",
-    "lighthouse": "lhci autorun",
-    "lighthouse:build": "astro build && lhci autorun",
+    "preview": "npm run build && wrangler dev",
+    "lighthouse": "CHROME_PATH=/usr/bin/chromium lhci autorun",
+    "lighthouse:build": "astro build && CHROME_PATH=/usr/bin/chromium lhci autorun",
     "check": "astro check",
     "lint": "npm run lint:eslint && npm run check && npm run lint:actions",
     "lint:eslint": "eslint .",
@@ -23,7 +23,9 @@
     "release": "node --experimental-strip-types ./scripts/release.ts",
     "release:dry": "node --experimental-strip-types ./scripts/release.ts --dry-run",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "lint-staged": {
     "*.{astro,css,js,json,md,mdx,mjs,ts,tsx,yaml,yml}": [
@@ -47,7 +49,6 @@
     "@astrojs/react": "^5.0.4",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.2.4",
     "astro": "^6.3.1",
     "astro-compress": "^2.4.1",
@@ -59,13 +60,11 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "react-hook-form": "^7.75.0",
     "simple-icons": "^16.19.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.2.4",
-    "tw-animate-css": "^1.4.0",
-    "zod": "^4.4.3"
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.5",
@@ -111,7 +110,8 @@
     "semantic-release": "^25.0.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.46.4",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "wrangler": "^4.101.0"
   },
   "config": {
     "commitizen": {

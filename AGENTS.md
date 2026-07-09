@@ -68,6 +68,7 @@ When a link or button has visible text, `aria-label` must contain that text (WCA
 - Example modules (blog, projects, faq, testimonials, services) are removable: delete the feature folder, content folder, route files, and unregister from `src/content.config.ts`.
 - To add a new content type: add a collection folder, a feature folder with schema/helpers, route files, and a navigation link.
 - `SITE_URL` env var sets the production URL for canonical links, sitemap, and robots.txt.
+- Deploys target Cloudflare (static assets served by Wrangler; config in `wrangler.jsonc`, `public/.assetsignore` excludes worker files from asset upload). Update the `name` in `wrangler.jsonc` when bootstrapping a new site.
 
 ## Commands
 
@@ -76,5 +77,8 @@ When a link or button has visible text, `aria-label` must contain that text (WCA
 - Lint: `npm run lint`
 - Format: `npm run format`
 - Build: `npm run build`
+- Test: `npm run test`
+- Preview (Cloudflare local): `npm run preview`
+- Deploy (Cloudflare): `npm run deploy`
 - Commit: `npm run commit`
 - Release: `npm run release` from clean `main`

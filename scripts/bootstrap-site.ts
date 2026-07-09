@@ -212,6 +212,10 @@ function updatePackageFiles(name: string) {
     lock.packages[""].name = name;
   }
   fs.writeFileSync("package-lock.json", JSON.stringify(lock, null, 2) + "\n");
+
+  if (fs.existsSync("wrangler.jsonc")) {
+    replaceInFile("wrangler.jsonc", /"name": ".*"/, `"name": "${name}"`);
+  }
 }
 
 function updateEnvFiles(siteUrl: string) {

@@ -12,3 +12,8 @@ pnpm-debug.log*
 .DS_Store
 .lighthouseci/
 .serena/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

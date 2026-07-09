@@ -1,0 +1,10 @@
+{
+  "compatibility_date": "2026-06-17",
+  "name": "local-business-website-scaffold",
+  "assets": {
+    "directory": "./dist",
+  },
+  "observability": {
+    "enabled": true,
+  },
+}
