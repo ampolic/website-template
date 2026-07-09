@@ -34,6 +34,8 @@ export type SiteConfig = {
     youtube: string;
   };
   contactAction: string;
+  /** hCaptcha site key. Leave empty to disable the captcha on the contact form. */
+  hcaptchaSiteKey: string;
   seo: {
     title: string;
     description: string;
@@ -81,6 +83,7 @@ export const siteConfig = {
     youtube: "",
   },
   contactAction: "",
+  hcaptchaSiteKey: "",
   seo: {
     title: "Evergreen Local Services | Local Service Business",
     description:
