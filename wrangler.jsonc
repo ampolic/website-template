@@ -1,6 +1,9 @@
 {
   "compatibility_date": "2026-06-17",
-  "name": "local-business-website-scaffold",
+  // Keep in sync with the Cloudflare Workers project name; bootstrap-site.ts rewrites it
+  "name": "website-template",
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./dist",
   },
