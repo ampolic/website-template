@@ -88,7 +88,7 @@ export const siteConfig = {
     title: "Evergreen Lawn & Landscape | Lawn Care in Springfield, IL",
     description:
       "Weekly mowing, fertilization, cleanups, and landscaping for Springfield-area homes and businesses. Free estimates, no long-term contracts.",
-    image: "/images/hero.svg",
+    image: "/images/hero.webp",
     imageAlt:
       "Freshly mowed lawn with crisp stripes in front of a well-kept home",
     themeColor: "#2f7662",
