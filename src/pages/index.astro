@@ -1,27 +1,68 @@
 ---
-import { LeafIcon, type LucideIcon, SnowflakeIcon } from "lucide-react";
+import {
+  CalendarCheckIcon,
+  ClipboardListIcon,
+  MapPinIcon,
+  PhoneIcon,
+  ThumbsUpIcon,
+} from "lucide-react";
 
 import Section from "@/components/shared/Section.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { siteConfig } from "@/config/site";
+import { getPublishedProjects } from "@/features/projects/content";
 import { getFeaturedServices } from "@/features/services/content";
+import { serviceIconMap } from "@/features/services/icons";
 import { getPublishedTestimonials } from "@/features/testimonials/content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const featuredServices = await getFeaturedServices();
-const testimonials = await getPublishedTestimonials();
+const testimonials = (await getPublishedTestimonials()).filter(
+  (t) => t.data.featured,
+);
+const featuredProjects = (await getPublishedProjects())
+  .filter((p) => p.data.featured)
+  .slice(0, 3);
 
-const iconMap: Record<string, LucideIcon> = {
-  leaf: LeafIcon,
-  snowflake: SnowflakeIcon,
-};
+const trustPoints = [
+  "Free estimates",
+  "Licensed & insured",
+  "No long-term contracts",
+  "Same-day-of-week service",
+];
+
+const steps = [
+  {
+    icon: PhoneIcon,
+    title: "Request an estimate",
+    description:
+      "Call or send the contact form. Most quotes go out within 24 hours — simple mowing quotes often the same day.",
+  },
+  {
+    icon: ClipboardListIcon,
+    title: "Get a clear plan",
+    description:
+      "You get a written scope and price before we start. No surprises on the invoice, no work you didn't ask for.",
+  },
+  {
+    icon: CalendarCheckIcon,
+    title: "We show up — every time",
+    description:
+      "Same crew, same day each week. If weather pushes us back, you'll know before we're late.",
+  },
+];
 
 function starRating(rating: number) {
   const full = "★";
   const empty = "☆";
   return full.repeat(rating) + empty.repeat(5 - rating);
 }
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+});
 ---
 
 <BaseLayout
@@ -65,6 +106,18 @@ function starRating(rating: number) {
             {siteConfig.business.phone}
           </a>
         </div>
+        <ul
+          class="text-primary-foreground/80 mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm"
+        >
+          {
+            trustPoints.map((point) => (
+              <li class="flex items-center gap-2">
+                <ThumbsUpIcon className="size-4" aria-hidden="true" />
+                {point}
+              </li>
+            ))
+          }
+        </ul>
       </div>
 
       <div class="fade-in">
@@ -87,13 +140,13 @@ function starRating(rating: number) {
     tone="surface"
     eyebrow="Services"
     title="What we offer"
-    description="Professional services tailored to your property."
+    description="Everything your lawn needs through the season — from a single crew that knows your property."
   >
     <div class="grid gap-4 md:grid-cols-2">
       {
         featuredServices.map((service) => {
           const Icon = service.data.icon
-            ? iconMap[service.data.icon]
+            ? serviceIconMap[service.data.icon]
             : undefined;
           return (
             <Card>
@@ -121,7 +174,95 @@ function starRating(rating: number) {
         })
       }
     </div>
+    <p class="text-muted-foreground mt-6 text-sm">
+      Also available: hedge & shrub trimming, mulch & bed care, and more.
+      <a class="text-primary font-medium hover:underline" href="/services">
+        See all services &rarr;
+      </a>
+    </p>
   </Section>
+
+  <Section
+    eyebrow="How it works"
+    title="From first call to first mow"
+    description="Working with us is deliberately simple."
+  >
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        steps.map((step, index) => (
+          <li class="bg-card rounded-lg border p-6 shadow-xs">
+            <div class="flex items-center gap-3">
+              <span
+                class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full"
+                aria-hidden="true"
+              >
+                <step.icon className="size-5" />
+              </span>
+              <span class="text-muted-foreground text-sm font-semibold">
+                Step {index + 1}
+              </span>
+            </div>
+            <h3 class="mt-4 text-base font-semibold">{step.title}</h3>
+            <p class="text-muted-foreground mt-2 text-sm/6">
+              {step.description}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {
+    featuredProjects.length > 0 && (
+      <Section
+        tone="surface"
+        eyebrow="Recent work"
+        title="Projects we're proud of"
+        description="A few recent transformations from around the Springfield area."
+      >
+        <div class="grid gap-4 md:grid-cols-3">
+          {featuredProjects.map((project) => (
+            <Card>
+              {project.data.image && (
+                <img
+                  class="aspect-video w-full rounded-t-lg object-cover"
+                  src={project.data.image}
+                  alt={project.data.imageAlt ?? ""}
+                  width="1200"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {project.data.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-muted-foreground flex items-center gap-1.5 text-xs">
+                  <MapPinIcon className="size-3.5" aria-hidden="true" />
+                  {project.data.location}
+                  {project.data.completedAt
+                    ? ` · ${dateFormatter.format(project.data.completedAt)}`
+                    : ""}
+                </p>
+                <p class="text-muted-foreground mt-3 text-sm/6">
+                  {project.data.description}
+                </p>
+                <a
+                  class="text-primary mt-5 inline-flex text-sm font-medium hover:underline"
+                  href={`/projects/${project.id}`}
+                >
+                  View project &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+    )
+  }
 
   {
     testimonials.length > 0 && (
@@ -154,4 +295,39 @@ function starRating(rating: number) {
       </Section>
     )
   }
+
+  <section class="bg-primary text-primary-foreground">
+    <div
+      class="site-container flex flex-col items-start gap-6 py-12 sm:py-16 lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div>
+        <h2 class="text-2xl font-semibold sm:text-3xl">
+          Ready for a lawn you don't have to think about?
+        </h2>
+        <p class="text-primary-foreground/80 mt-3 max-w-2xl text-base/7">
+          Get a free, no-obligation estimate. Most quotes go out within 24
+          hours.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a
+          class:list={buttonVariants({ size: "lg", variant: "secondary" })}
+          href={siteConfig.primaryCta.href}
+        >
+          {siteConfig.primaryCta.label}
+        </a>
+        <a
+          class:list={buttonVariants({
+            variant: "outline",
+            size: "lg",
+            className:
+              "text-primary-foreground border-white/25 bg-white/10 hover:bg-white/15",
+          })}
+          href={siteConfig.business.phoneHref}
+        >
+          {siteConfig.business.phone}
+        </a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

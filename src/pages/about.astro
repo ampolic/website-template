@@ -3,12 +3,37 @@ import Section from "@/components/shared/Section.astro";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig } from "@/config/site";
 import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
+
+const stats = [
+  { value: "2012", label: "In business since" },
+  { value: "400+", label: "Properties maintained" },
+  { value: "12", label: "Crew members" },
+  { value: "4.9★", label: "Average review rating" },
+];
+
+const values = [
+  {
+    title: "Show up when we say we will",
+    description:
+      "Routes run on fixed days. If weather moves us, you hear from us before we're late — not after.",
+  },
+  {
+    title: "Quote it straight",
+    description:
+      "Written scope and price before work starts. If we find something mid-job, we call before we bill.",
+  },
+  {
+    title: "Do it like it's ours",
+    description:
+      "Sharp blades, closed gates, blown-off walks. The last two minutes of a visit matter as much as the first sixty.",
+  },
+];
 ---
 
 <StandardPageLayout
   eyebrow="About"
   title={siteConfig.business.name}
-  description="Learn more about our team and what we do."
+  description="A family-owned crew that treats your property like the one we go home to."
 >
   <Section>
     <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
@@ -30,6 +55,12 @@ import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
               </dd>
             </div>
             <div>
+              <dt class="font-medium">Hours</dt>
+              <dd class="text-muted-foreground mt-1">
+                {siteConfig.business.hours.join(" · ")}
+              </dd>
+            </div>
+            <div>
               <dt class="font-medium">Service Areas</dt>
               <dd class="text-muted-foreground mt-1">
                 {siteConfig.serviceAreas.join(", ")}
@@ -41,15 +72,55 @@ import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
 
       <div class="prose-site">
         <p>
-          {siteConfig.business.name} is a locally owned and operated business serving
-          the {siteConfig.serviceAreas.slice(0, 3).join(", ")} area and beyond.
+          {siteConfig.business.name} started in 2012 with one truck, one trailer,
+          and a simple observation: most lawn companies lose customers not because
+          the mowing is bad, but because nobody answers the phone. We built the business
+          around fixing that.
         </p>
         <p>
-          We take pride in delivering quality work, clear communication, and
-          reliable service. Every project starts with a conversation about what
-          you need and ends with a result you can count on.
+          Today our crews maintain more than 400 residential and commercial
+          properties across the {siteConfig.serviceAreas.slice(0, 3).join(", ")} area.
+          The trucks are newer and there are more of them, but the operating rules
+          haven't changed: same crew on your property every visit, a real person answering
+          the phone during business hours, and a written quote before any work begins.
+        </p>
+        <p>
+          We're licensed pesticide applicators, fully insured, and picky about
+          who we hire — every crew lead has been with us at least three seasons.
+          When we say your lawn will look cared for, it's because the people
+          caring for it plan to be back next week.
         </p>
       </div>
+    </div>
+  </Section>
+
+  <Section tone="surface" eyebrow="By the numbers" title="Where we are today">
+    <dl class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        stats.map((stat) => (
+          <div class="bg-card rounded-lg border p-6 text-center shadow-xs">
+            <dd class="text-primary text-3xl font-semibold">{stat.value}</dd>
+            <dt class="text-muted-foreground mt-2 text-sm">{stat.label}</dt>
+          </div>
+        ))
+      }
+    </dl>
+  </Section>
+
+  <Section eyebrow="How we work" title="Three rules we don't break">
+    <div class="grid gap-4 md:grid-cols-3">
+      {
+        values.map((value) => (
+          <Card>
+            <CardContent className="pt-6">
+              <h3 class="text-base font-semibold">{value.title}</h3>
+              <p class="text-muted-foreground mt-2 text-sm/6">
+                {value.description}
+              </p>
+            </CardContent>
+          </Card>
+        ))
+      }
     </div>
   </Section>
 </StandardPageLayout>

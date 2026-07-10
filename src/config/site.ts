@@ -50,12 +50,12 @@ export const siteConfig = {
   locale: "en-US",
   url: "https://example.com",
   business: {
-    name: "Evergreen Local Services",
-    legalName: "Evergreen Local Services LLC",
-    tagline: "Reliable work from a local team.",
-    taglineShort: "Reliable local services",
+    name: "Evergreen Lawn & Landscape",
+    legalName: "Evergreen Lawn & Landscape LLC",
+    tagline: "Lawns that look cared for — because they are.",
+    taglineShort: "Lawn care & landscaping",
     description:
-      "A practical starter site for local service businesses that need fast, polished static websites.",
+      "Family-owned lawn care and landscaping serving the Springfield area since 2012. Weekly mowing, fertilization programs, cleanups, and landscape projects — done on schedule, every time.",
     phone: "(555) 123-4567",
     phoneHref: "tel:+15551234567",
     email: "hello@example.com",
@@ -85,11 +85,12 @@ export const siteConfig = {
   contactAction: "",
   hcaptchaSiteKey: "",
   seo: {
-    title: "Evergreen Local Services | Local Service Business",
+    title: "Evergreen Lawn & Landscape | Lawn Care in Springfield, IL",
     description:
-      "A fast, SEO-friendly starter website for local service businesses.",
+      "Weekly mowing, fertilization, cleanups, and landscaping for Springfield-area homes and businesses. Free estimates, no long-term contracts.",
     image: "/images/hero.svg",
-    imageAlt: "Illustration of a local service business at work",
+    imageAlt:
+      "Freshly mowed lawn with crisp stripes in front of a well-kept home",
     themeColor: "#2f7662",
     twitterSite: undefined,
   },

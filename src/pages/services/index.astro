@@ -1,30 +1,24 @@
 ---
-import { LeafIcon, type LucideIcon, SnowflakeIcon } from "lucide-react";
-
 import Section from "@/components/shared/Section.astro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPublishedServices } from "@/features/services/content";
+import { serviceIconMap } from "@/features/services/icons";
 import StandardPageLayout from "@/layouts/StandardPageLayout.astro";
 
 const services = await getPublishedServices();
-
-const iconMap: Record<string, LucideIcon> = {
-  leaf: LeafIcon,
-  snowflake: SnowflakeIcon,
-};
 ---
 
 <StandardPageLayout
   eyebrow="Services"
   title="Our services"
-  description="Professional work delivered reliably."
+  description="Everything your lawn and landscape need through the season, from one crew that knows your property."
 >
   <Section>
     <div class="grid gap-4 md:grid-cols-2">
       {
-        services.map((service) => {
+        services.map((service, index) => {
           const Icon = service.data.icon
-            ? iconMap[service.data.icon]
+            ? serviceIconMap[service.data.icon]
             : undefined;
           return (
             <Card>
@@ -35,7 +29,8 @@ const iconMap: Record<string, LucideIcon> = {
                   alt=""
                   width="1200"
                   height="800"
-                  loading="lazy"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchpriority={index === 0 ? "high" : "auto"}
                   decoding="async"
                 />
               )}
